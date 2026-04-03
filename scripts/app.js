@@ -439,7 +439,6 @@ async function revealCards() {
         displayReading(localReading, selectedCardData, spread);
     }
 }
-
 // 显示解读
 function displayReading(reading, cards, spread) {
     const container = document.getElementById('reading-content');
