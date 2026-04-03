@@ -249,9 +249,7 @@ function shuffleCards() {
 // 初始化选牌
 // ========================================
 function initCardSelection() {
-    // 在创建 card 元素之前，决定正逆位
-const isReversed = Math.random() < 0.5;
-card.dataset.reversed = isReversed;
+    
     const grid = document.getElementById('cards-grid');
     const slotsContainer = document.getElementById('selected-slots');
     
@@ -281,7 +279,9 @@ card.dataset.reversed = isReversed;
         const card = document.createElement('div');
         card.className = 'tarot-card';
         card.dataset.index = cardIndex;
-        
+            // 随机决定正逆位（50%概率逆位）
+    const isReversed = Math.random() < 0.5;
+    card.dataset.reversed = isReversed;
         // 计算微弧形位置和旋转
         const positionFromCenter = i - centerIndex;
         const rotation = positionFromCenter * angleStep;
