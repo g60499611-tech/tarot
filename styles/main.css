@@ -1,0 +1,1368 @@
+/* ========================================
+   神秘塔罗 - 1920s 盖茨比风格
+   Art Deco 美学设计
+   ======================================== */
+
+/* CSS Variables */
+:root {
+    --gold-primary: #C9A84C;
+    --gold-light: #E8D5A3;
+    --gold-dark: #9A7B3D;
+    --gold-shine: #F5E6B8;
+    --black: #0A0A0A;
+    --black-light: #1A1A1A;
+    --black-lighter: #2A2A2A;
+    --white: #FFFFFF;
+    --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --font-display: 'Cinzel', 'Playfair Display', serif;
+    --font-body: 'Playfair Display', serif;
+}
+
+/* Reset & Base */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--black);
+    color: var(--gold-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ========================================
+   加载动画
+   ======================================== */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loading-content {
+    text-align: center;
+    padding: 2rem;
+}
+
+.loading-ornament {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 2rem;
+    border: 2px solid var(--gold-primary);
+    transform: rotate(45deg);
+    position: relative;
+    animation: loadingRotate 3s linear infinite;
+}
+
+.loading-ornament::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--gold-primary);
+}
+
+.loading-ornament::after {
+    content: '◆';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    color: var(--gold-primary);
+    font-size: 1.5rem;
+}
+
+@keyframes loadingRotate {
+    0% { transform: rotate(45deg); }
+    100% { transform: rotate(405deg); }
+}
+
+.loading-text {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--gold-primary);
+    letter-spacing: 0.5em;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+}
+
+.loading-bar {
+    width: 200px;
+    height: 2px;
+    background: var(--black-lighter);
+    margin: 0 auto 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+    animation: loadingProgress 2s ease-in-out infinite;
+}
+
+@keyframes loadingProgress {
+    0% { width: 0; left: 0; }
+    50% { width: 100%; left: 0; }
+    100% { width: 0; left: 100%; }
+}
+
+.loading-subtitle {
+    font-size: 0.9rem;
+    color: var(--gold-dark);
+    letter-spacing: 0.3em;
+}
+
+/* ========================================
+   粒子画布
+   ======================================== */
+#particle-canvas,
+#trail-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#particle-canvas {
+    z-index: 1;
+}
+
+#trail-canvas {
+    z-index: 2;
+}
+
+/* ========================================
+   Art Deco 装饰边框
+   ======================================== */
+.deco-border {
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.top-border, .bottom-border {
+    left: 20px;
+    right: 20px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.top-border { top: 0; }
+.bottom-border { bottom: 0; }
+
+.left-border, .right-border {
+    top: 60px;
+    bottom: 60px;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-border { left: 0; }
+.right-border { right: 0; }
+
+.deco-corner {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--gold-primary);
+    position: relative;
+}
+
+.deco-corner.top-left {
+    border-right: none;
+    border-bottom: none;
+}
+
+.deco-corner.top-right {
+    border-left: none;
+    border-bottom: none;
+}
+
+.deco-corner.bottom-left {
+    border-right: none;
+    border-top: none;
+}
+
+.deco-corner.bottom-right {
+    border-left: none;
+    border-top: none;
+}
+
+.deco-line {
+    flex: 1;
+    height: 2px;
+    margin: 0 1rem;
+    background: linear-gradient(90deg, var(--gold-primary), var(--gold-light) 50%, var(--gold-primary));
+    position: relative;
+}
+
+.deco-line::before,
+.deco-line::after {
+    content: '◆';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: var(--gold-primary);
+}
+
+.deco-line::before { left: 30%; }
+.deco-line::after { right: 30%; }
+
+.deco-vline {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--gold-primary), var(--gold-light) 50%, var(--gold-primary));
+    position: relative;
+}
+
+.deco-vline::before,
+.deco-vline::after {
+    content: '◆';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: var(--gold-primary);
+}
+
+.deco-vline::before { top: 30%; }
+.deco-vline::after { bottom: 30%; }
+
+/* ========================================
+   主容器
+   ======================================== */
+.main-container {
+    position: relative;
+    z-index: 5;
+    min-height: 100vh;
+    padding: 80px 80px;
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        padding: 70px 20px;
+    }
+    
+    .top-border, .bottom-border {
+        left: 10px;
+        right: 10px;
+        height: 40px;
+    }
+    
+    .left-border, .right-border {
+        width: 40px;
+    }
+    
+    .deco-corner {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+/* ========================================
+   页面切换
+   ======================================== */
+.section {
+    display: none;
+    min-height: calc(100vh - 160px);
+    animation: fadeIn 0.6s ease;
+}
+
+.section.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================
+   首页
+   ======================================== */
+.home-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.title-wrapper {
+    margin-bottom: 1rem;
+}
+
+.main-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.title-line {
+    font-size: clamp(3rem, 10vw, 6rem);
+    letter-spacing: 0.3em;
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold-primary) 50%, var(--gold-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 60px rgba(201, 168, 76, 0.3);
+    line-height: 1.1;
+}
+
+.title-ornament {
+    margin-top: 1rem;
+}
+
+.ornament-diamond {
+    font-size: 1.5rem;
+    color: var(--gold-primary);
+    animation: diamondPulse 2s ease-in-out infinite;
+}
+
+@keyframes diamondPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* 悬浮卡牌 */
+.card-display {
+    margin: 2rem 0;
+}
+
+.floating-card {
+    width: 160px;
+    height: 280px;
+    perspective: 1000px;
+    animation: cardFloat 3s ease-in-out infinite;
+}
+
+@keyframes cardFloat {
+    0%, 100% { transform: translateY(0) rotateY(0deg); }
+    50% { transform: translateY(-15px) rotateY(5deg); }
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 
+        0 20px 60px rgba(201, 168, 76, 0.3),
+        0 0 100px rgba(201, 168, 76, 0.1),
+        inset 0 0 30px rgba(201, 168, 76, 0.1);
+    border: 2px solid var(--gold-primary);
+    background: linear-gradient(145deg, var(--gold-dark), var(--gold-primary));
+}
+
+.card-back {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, var(--gold-dark), var(--gold-primary));
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-back img {
+    width: 110%;
+    height: 110%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1.15);
+}
+
+@media (max-width: 768px) {
+    .floating-card {
+        width: 120px;
+        height: 210px;
+    }
+}
+
+/* ========================================
+   Art Deco 按钮
+   ======================================== */
+.art-deco-btn {
+    position: relative;
+    padding: 1.2rem 3rem;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-primary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.4s var(--transition-smooth);
+}
+
+.art-deco-btn .btn-border {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--gold-primary);
+    transition: all 0.4s ease;
+}
+
+.art-deco-btn .btn-border::before,
+.art-deco-btn .btn-border::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--gold-primary);
+    transition: all 0.4s ease;
+}
+
+.art-deco-btn .btn-border::before {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.art-deco-btn .btn-border::after {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+}
+
+.art-deco-btn .btn-text {
+    position: relative;
+    z-index: 2;
+    display: block;
+    transition: all 0.4s ease;
+}
+
+.art-deco-btn .btn-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+.art-deco-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(201, 168, 76, 0.4);
+}
+
+.art-deco-btn:hover .btn-border {
+    border-color: var(--gold-light);
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.5);
+}
+
+.art-deco-btn:hover .btn-text {
+    color: var(--gold-light);
+    text-shadow: 0 0 20px var(--gold-primary);
+}
+
+.art-deco-btn:hover .btn-shine {
+    left: 100%;
+}
+
+.art-deco-btn.secondary {
+    padding: 0.8rem 2rem;
+    font-size: 0.9rem;
+}
+
+.art-deco-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ========================================
+   牌阵选择页
+   ======================================== */
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-header.compact {
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(180deg, var(--gold-light), var(--gold-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section-subtitle {
+    font-size: 1rem;
+    color: var(--gold-dark);
+    letter-spacing: 0.1em;
+}
+
+.section-ornament {
+    color: var(--gold-primary);
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+}
+
+/* 牌阵选项 */
+.spread-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 1rem;
+}
+
+.spread-card {
+    position: relative;
+    background: linear-gradient(145deg, var(--black-light), var(--black));
+    border: 1px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.4s var(--transition-smooth);
+    overflow: hidden;
+}
+
+.spread-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    transition: all 0.4s ease;
+}
+
+.spread-card-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.spread-icon {
+    margin-bottom: 1.5rem;
+}
+
+.spread-cards-preview {
+    display: flex;
+    justify-content: center;
+    gap: 0.3rem;
+    height: 80px;
+    align-items: flex-end;
+}
+
+.preview-card {
+    width: 40px;
+    height: 70px;
+    background: linear-gradient(145deg, var(--gold-dark), var(--gold-primary));
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+}
+
+.preview-card.small {
+    width: 28px;
+    height: 50px;
+}
+
+.spread-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.8rem;
+    color: var(--gold-primary);
+}
+
+.spread-desc {
+    font-size: 0.95rem;
+    color: var(--gold-dark);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.spread-count {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid var(--gold-dark);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--gold-light);
+    letter-spacing: 0.1em;
+}
+
+.spread-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(201, 168, 76, 0.15), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.spread-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--gold-primary);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 60px rgba(201, 168, 76, 0.2);
+}
+
+.spread-card:hover::before {
+    border-color: var(--gold-primary);
+}
+
+.spread-card:hover .spread-glow {
+    opacity: 1;
+}
+
+.spread-card:hover .preview-card {
+    animation: cardShuffle 0.5s ease;
+}
+
+@keyframes cardShuffle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@media (max-width: 768px) {
+    .spread-options {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .spread-card {
+        padding: 1.5rem;
+    }
+}
+
+/* ========================================
+   洗牌动画页
+   ======================================== */
+.shuffle-container {
+    text-align: center;
+}
+
+.shuffle-text {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 3rem;
+    animation: shuffleTextPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes shuffleTextPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.shuffle-deck {
+    position: relative;
+    width: 200px;
+    height: 300px;
+    margin: 0 auto;
+}
+
+.deck-card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, var(--gold-dark), var(--gold-primary));
+    border-radius: 12px;
+    border: 2px solid var(--gold-light);
+    animation: shuffleDeck 1.5s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.1s);
+}
+
+@keyframes shuffleDeck {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+        opacity: 1;
+    }
+    25% {
+        transform: translateX(-80px) rotate(-15deg);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateX(0) rotate(0deg);
+        opacity: 1;
+    }
+    75% {
+        transform: translateX(80px) rotate(15deg);
+        opacity: 0.8;
+    }
+}
+
+@media (max-width: 768px) {
+    .shuffle-deck {
+        width: 140px;
+        height: 210px;
+    }
+    
+    @keyframes shuffleDeck {
+        0%, 100% { transform: translateX(0) rotate(0deg); }
+        25% { transform: translateX(-50px) rotate(-15deg); }
+        50% { transform: translateX(0) rotate(0deg); }
+        75% { transform: translateX(50px) rotate(15deg); }
+    }
+}
+
+/* ========================================
+   选牌页 - 扇形展开
+   ======================================== */
+/* 选牌section整体布局调整 */
+#select-section {
+    justify-content: flex-start;
+    padding-top: 0vh;
+}
+
+#select-section .section-header.compact {
+    margin-bottom: 0rem;
+    margin-top: 2vh;
+}
+
+.cards-table {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.cards-fan {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 320px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 100px;
+}
+
+/* 扇形卡牌 */
+.tarot-card {
+    position: absolute;
+    width: 90px;
+    height: 158px;
+    perspective: 1000px;
+    cursor: pointer;
+    transition: all 0.25s var(--transition-smooth);
+    transform-origin: bottom center;
+    bottom: 0;
+}
+
+/* Hover - 预选状态：浮出+金光 */
+.tarot-card.hovered {
+    z-index: 200 !important;
+}
+
+.tarot-card.hovered .tarot-card-inner {
+    transform: translateY(-40px) scale(1.08);
+    box-shadow: 
+        0 0 30px rgba(201, 168, 76, 0.6),
+        0 0 60px rgba(201, 168, 76, 0.4),
+        0 0 90px rgba(201, 168, 76, 0.2),
+        inset 0 0 20px rgba(201, 168, 76, 0.1);
+}
+
+.tarot-card.hovered .tarot-card-back {
+    border-color: var(--gold-light);
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.5);
+}
+
+/* 点击选中后飞出 */
+.tarot-card.flying {
+    pointer-events: none;
+    z-index: 300 !important;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tarot-card.flying .tarot-card-inner {
+    animation: cardFlyOut 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes cardFlyOut {
+    0% {
+        transform: translateY(-40px) scale(1.08);
+        box-shadow: 0 0 60px rgba(201, 168, 76, 0.6);
+    }
+    50% {
+        transform: translateY(-80px) scale(1.1);
+        box-shadow: 0 0 100px rgba(201, 168, 76, 0.9);
+    }
+    100% {
+        transform: translateY(200px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* 响应式扇形 */
+@media (max-width: 768px) {
+    .cards-fan {
+        height: 240px;
+        padding-bottom: 30px;
+    }
+    
+    .tarot-card {
+        width: 65px;
+        height: 114px;
+    }
+    
+    .tarot-card.hovered .tarot-card-inner {
+        transform: translateY(-30px) scale(1.06);
+    }
+}
+
+@media (max-width: 480px) {
+    .cards-fan {
+        height: 200px;
+        padding-bottom: 20px;
+    }
+    
+    .tarot-card {
+        width: 50px;
+        height: 88px;
+    }
+}
+
+.tarot-card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s var(--transition-smooth);
+}
+
+.tarot-card.flipped .tarot-card-inner {
+    transform: rotateY(180deg);
+}
+
+.tarot-card-front,
+.tarot-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tarot-card-back {
+    transform: rotateY(0deg);
+    border: 2px solid var(--gold-primary);
+    box-shadow: 
+        0 4px 20px rgba(201, 168, 76, 0.2),
+        inset 0 0 20px rgba(201, 168, 76, 0.05);
+    background: linear-gradient(145deg, var(--gold-dark), var(--gold-primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tarot-card-back img {
+    width: 110%;
+    height: 110%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1.15);
+}
+
+.tarot-card-front {
+    transform: rotateY(180deg);
+    background: linear-gradient(145deg, var(--black-light), var(--black));
+    border: 2px solid var(--gold-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+}
+
+.tarot-card-front img {
+    width: 100%;
+    height: 75%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.tarot-card-name {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    text-align: center;
+    color: var(--gold-primary);
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+}
+
+/* 选中状态 */
+.tarot-card.selected {
+    pointer-events: none;
+}
+
+.tarot-card.selected .tarot-card-back {
+    animation: selectCard 0.8s var(--transition-smooth) forwards;
+}
+
+@keyframes selectCard {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 20px rgba(201, 168, 76, 0.2);
+    }
+    50% {
+        transform: scale(1.2);
+        box-shadow: 0 0 60px rgba(201, 168, 76, 0.8);
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* 已选牌区域 */
+.selected-cards-area {
+    margin-top: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(201, 168, 76, 0.05);
+    border: 1px solid var(--gold-dark);
+    border-radius: 8px;
+    min-width: 300px;
+}
+
+.selected-label {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dark);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.selected-slots {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 100px;
+}
+
+.selected-slot {
+    width: 60px;
+    height: 100px;
+    border: 2px dashed var(--gold-dark);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+}
+
+.selected-slot.filled {
+    border-style: solid;
+    border-color: var(--gold-primary);
+    background: rgba(201, 168, 76, 0.1);
+}
+
+.selected-slot-number {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--gold-dark);
+}
+
+@media (max-width: 768px) {
+    .tarot-card {
+        width: 60px;
+        height: 105px;
+    }
+    
+    .selected-cards-area {
+        min-width: 250px;
+        padding: 1rem;
+    }
+    
+    .selected-slot {
+        width: 45px;
+        height: 75px;
+    }
+}
+
+/* ========================================
+   解读页
+   ======================================== */
+.reading-cards {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    padding: 0 1rem;
+}
+
+.reading-card {
+    width: 140px;
+    perspective: 1000px;
+    animation: readingCardAppear 0.8s ease forwards;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.reading-card:nth-child(1) { animation-delay: 0.2s; }
+.reading-card:nth-child(2) { animation-delay: 0.4s; }
+.reading-card:nth-child(3) { animation-delay: 0.6s; }
+.reading-card:nth-child(4) { animation-delay: 0.8s; }
+.reading-card:nth-child(5) { animation-delay: 1s; }
+
+@keyframes readingCardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(30px) rotateY(-90deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) rotateY(0);
+    }
+}
+
+.reading-card-inner {
+    width: 100%;
+    height: 220px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s var(--transition-smooth);
+}
+
+.reading-card:hover .reading-card-inner {
+    transform: rotateY(10deg) translateY(-10px);
+}
+
+.reading-card-front {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, var(--black-light), var(--black));
+    border: 2px solid var(--gold-primary);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(201, 168, 76, 0.2);
+}
+
+/* 卡牌图片现在占满整个卡牌 */
+.reading-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 卡牌信息移到卡牌下方 */
+.reading-card-info {
+    margin-top: 1rem;
+    text-align: center;
+    padding: 0 0.5rem;
+}
+
+.reading-card-position {
+    font-size: 0.75rem;
+    color: var(--gold-dark);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+}
+
+.reading-card-name {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--gold-primary);
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+}
+
+/* 解读内容 */
+.reading-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.reading-item {
+    background: linear-gradient(145deg, rgba(26, 26, 26, 0.8), rgba(10, 10, 10, 0.8));
+    border: 1px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+.reading-item:nth-child(1) { animation-delay: 1.2s; }
+.reading-item:nth-child(2) { animation-delay: 1.4s; }
+.reading-item:nth-child(3) { animation-delay: 1.6s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reading-item-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.reading-item-position {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--gold-dark);
+    letter-spacing: 0.15em;
+}
+
+.reading-item-card {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--gold-primary);
+    font-weight: 600;
+}
+
+.reading-item-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--gold-light);
+    text-align: justify;
+}
+
+.reading-summary {
+    background: linear-gradient(145deg, rgba(201, 168, 76, 0.1), rgba(201, 168, 76, 0.05));
+    border: 2px solid var(--gold-primary);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 2rem;
+    animation: fadeInUp 0.6s ease 1.8s forwards;
+    opacity: 0;
+}
+
+.reading-summary-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    text-align: center;
+    letter-spacing: 0.2em;
+    margin-bottom: 1rem;
+    color: var(--gold-primary);
+}
+
+.reading-summary-text {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--gold-light);
+    text-align: justify;
+}
+
+.reading-actions {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .reading-cards {
+        gap: 1rem;
+    }
+    
+    .reading-card {
+        width: 100px;
+    }
+    
+    .reading-card-inner {
+        height: 160px;
+    }
+    
+    .reading-card-info {
+        margin-top: 0.6rem;
+    }
+    
+    .reading-card-position {
+        font-size: 0.65rem;
+    }
+    
+    .reading-card-name {
+        font-size: 0.7rem;
+    }
+    
+    /* 手机选牌页面布局调整 */
+    #select-section {
+        padding-top: 1vh;
+    }
+    
+    #select-section .section-header.compact {
+        margin-top: 1vh;
+        margin-bottom: 0.5rem;
+    }
+    
+    .cards-table {
+        min-height: 220px;
+    }
+    
+    .selected-cards-area {
+        margin-top: 0.5rem;
+        padding: 0.8rem;
+    }
+    
+    .reading-item {
+        padding: 1rem;
+    }
+    
+    .reading-item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+}
+
+/* ========================================
+   响应式适配
+   ======================================== */
+@media (max-width: 480px) {
+    .title-line {
+        font-size: 2.5rem;
+    }
+    
+    .loading-text {
+        font-size: 1.8rem;
+        letter-spacing: 0.3em;
+    }
+    
+    .art-deco-btn {
+        padding: 1rem 2rem;
+        font-size: 0.95rem;
+    }
+    
+    .spread-options {
+        padding: 0 0.5rem;
+    }
+    
+    .spread-card {
+        padding: 1.2rem;
+    }
+    
+    .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .tarot-card {
+        width: 50px;
+        height: 88px;
+    }
+}
+
+/* ========================================
+   特殊效果
+   ======================================== */
+.golden-glow {
+    box-shadow: 0 0 60px rgba(201, 168, 76, 0.5);
+}
+
+.shimmer {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    100% { left: 100%; }
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--black);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-primary);
+}
+
+/* 选择文本颜色 */
+::selection {
+    background: rgba(201, 168, 76, 0.3);
+    color: var(--gold-light);
+}

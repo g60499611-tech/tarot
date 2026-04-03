@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>神秘塔罗 - 1920s 盖茨比风格占卜</title>
+    <link rel="preconnect" href="https://fonts.googleapis.cn">
+    <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin>
+    <link href="https://fonts.googleapis.cn/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="loading-ornament"></div>
+            <h2 class="loading-text">神秘塔罗</h2>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-subtitle">正在连接神秘力量...</p>
+        </div>
+    </div>
+
+    <!-- 粒子画布 -->
+    <canvas id="particle-canvas"></canvas>
+    <canvas id="trail-canvas"></canvas>
+
+    <!-- Art Deco 装饰边框 -->
+    <div class="deco-border top-border">
+        <div class="deco-corner top-left"></div>
+        <div class="deco-line"></div>
+        <div class="deco-corner top-right"></div>
+    </div>
+    <div class="deco-border bottom-border">
+        <div class="deco-corner bottom-left"></div>
+        <div class="deco-line"></div>
+        <div class="deco-corner bottom-right"></div>
+    </div>
+    <div class="deco-border left-border">
+        <div class="deco-vline"></div>
+    </div>
+    <div class="deco-border right-border">
+        <div class="deco-vline"></div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 首页 -->
+        <section id="home-section" class="section active">
+            <div class="home-content">
+                <div class="title-wrapper">
+                    <h1 class="main-title">
+                        <span class="title-line">神秘</span>
+                        <span class="title-line">塔罗</span>
+                    </h1>
+                    <div class="title-ornament">
+                        <span class="ornament-diamond">◆</span>
+                    </div>
+                </div>
+                
+                <div class="card-display">
+                    <div class="floating-card">
+                        <div class="card-inner">
+                            <div class="card-back">
+                                <img src="public/card-back.jpg" alt="塔罗卡背">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="art-deco-btn">
+                    <span class="btn-border"></span>
+                    <span class="btn-text">开始洗牌</span>
+                    <span class="btn-shine"></span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 牌阵选择页 -->
+        <section id="spread-section" class="section">
+            <div class="section-header">
+                <h2 class="section-title">选择牌阵</h2>
+                <div class="section-ornament">
+                    <span>◆</span>
+                </div>
+            </div>
+            
+            <div class="spread-options">
+                <div class="spread-card" data-spread="daily">
+                    <div class="spread-card-inner">
+                        <div class="spread-icon">
+                            <div class="spread-cards-preview">
+                                <div class="preview-card"></div>
+                            </div>
+                        </div>
+                        <h3 class="spread-name">塔罗日运</h3>
+                        <p class="spread-desc">抽取一张牌，揭示今日运势指引</p>
+                        <div class="spread-count">1 张牌</div>
+                    </div>
+                    <div class="spread-glow"></div>
+                </div>
+
+                <div class="spread-card" data-spread="three">
+                    <div class="spread-card-inner">
+                        <div class="spread-icon">
+                            <div class="spread-cards-preview">
+                                <div class="preview-card"></div>
+                                <div class="preview-card"></div>
+                                <div class="preview-card"></div>
+                            </div>
+                        </div>
+                        <h3 class="spread-name">无牌阵</h3>
+                        <p class="spread-desc">过去 · 现在 · 未来，三张牌解读人生</p>
+                        <div class="spread-count">3 张牌</div>
+                    </div>
+                    <div class="spread-glow"></div>
+                </div>
+
+                <div class="spread-card" data-spread="choice">
+                    <div class="spread-card-inner">
+                        <div class="spread-icon">
+                            <div class="spread-cards-preview">
+                                <div class="preview-card small"></div>
+                                <div class="preview-card small"></div>
+                                <div class="preview-card small"></div>
+                                <div class="preview-card small"></div>
+                                <div class="preview-card small"></div>
+                            </div>
+                        </div>
+                        <h3 class="spread-name">二选一</h3>
+                        <p class="spread-desc">现状、选择A、选择B及各自结果</p>
+                        <div class="spread-count">5 张牌</div>
+                    </div>
+                    <div class="spread-glow"></div>
+                </div>
+            </div>
+
+            <button id="back-home-btn" class="art-deco-btn secondary">
+                <span class="btn-border"></span>
+                <span class="btn-text">返回</span>
+            </button>
+        </section>
+
+        <!-- 洗牌动画页 -->
+        <section id="shuffle-section" class="section">
+            <div class="shuffle-container">
+                <h2 class="shuffle-text">正在洗牌...</h2>
+                <div class="shuffle-deck">
+                    <div class="deck-card" style="--i:0"></div>
+                    <div class="deck-card" style="--i:1"></div>
+                    <div class="deck-card" style="--i:2"></div>
+                    <div class="deck-card" style="--i:3"></div>
+                    <div class="deck-card" style="--i:4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 选牌页 -->
+        <section id="select-section" class="section">
+            <div class="section-header compact">
+                <h2 class="section-title" id="select-title">请选择 <span id="cards-remaining">1</span> 张牌</h2>
+                <p class="section-subtitle">点击选中的牌，它会飞向你的命运</p>
+            </div>
+            
+            <div class="cards-table">
+                <div id="cards-grid" class="cards-grid"></div>
+            </div>
+
+            <div id="selected-cards-area" class="selected-cards-area">
+                <div class="selected-label">已选择</div>
+                <div id="selected-slots" class="selected-slots"></div>
+            </div>
+        </section>
+
+        <!-- 解读页 -->
+        <section id="reading-section" class="section">
+            <div class="section-header">
+                <h2 class="section-title">塔罗启示</h2>
+                <div class="section-ornament">
+                    <span>◆</span>
+                </div>
+            </div>
+
+            <div id="reading-cards" class="reading-cards"></div>
+
+            <div id="reading-content" class="reading-content"></div>
+
+            <div class="reading-actions">
+                <button id="new-reading-btn" class="art-deco-btn">
+                    <span class="btn-border"></span>
+                    <span class="btn-text">再次占卜</span>
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- API配置（用户需要自行修改） -->
+    <script>
+        // 后端API配置 - 用户部署到Render后需要修改此URL
+        const API_CONFIG = {
+            baseUrl: 'http://localhost:5000', // 生产环境改为 Render 部署地址
+            endpoint: '/api/reading'
+        };
+    </script>
+    <script src="scripts/app.js"></script>
+</body>
+</html>
