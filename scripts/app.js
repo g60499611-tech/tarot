@@ -249,7 +249,6 @@ function shuffleCards() {
 // 初始化选牌
 // ========================================
 function initCardSelection() {
-    
     const grid = document.getElementById('cards-grid');
     const slotsContainer = document.getElementById('selected-slots');
     
@@ -279,7 +278,7 @@ function initCardSelection() {
         const card = document.createElement('div');
         card.className = 'tarot-card';
         card.dataset.index = cardIndex;
-      
+        
         // 计算微弧形位置和旋转
         const positionFromCenter = i - centerIndex;
         const rotation = positionFromCenter * angleStep;
@@ -365,10 +364,7 @@ function selectCard(cardElement, cardIndex) {
     if (state.selectedCards.length >= cardCount) return;
     if (state.selectedCards.includes(cardIndex)) return;
     
-    state.selectedCards.push({
-    index: cardIndex,
-    isReversed: Math.random() < 0.5
-});
+    state.selectedCards.push(cardIndex);
     
     // 先移除hovered状态，然后触发飞出动画
     cardElement.classList.remove('hovered');
@@ -407,11 +403,6 @@ async function revealCards() {
     
     // 创建结果卡牌 - 卡牌图片占满，信息在下方
     selectedCardData.forEach((card, i) => {
-        const isReversed = state.selectedCards[i].isReversed;
-const rotateStyle = isReversed ? 'transform: rotate(180deg);' : '';
-
-// 在 innerHTML 的 img 标签上添加 style
-<img style="${rotateStyle}" ...>
         const cardEl = document.createElement('div');
         cardEl.className = 'reading-card';
         cardEl.innerHTML = `
@@ -446,13 +437,9 @@ const rotateStyle = isReversed ? 'transform: rotate(180deg);' : '';
         // 使用本地解读作为fallback
         const localReading = generateLocalReading(selectedCardData, spread);
         displayReading(localReading, selectedCardData, spread);
-        cards: cards.map(c => ({ 
-    name: c.name, 
-    meaning: c.meaning,
-    isReversed: c.isReversed  // 添加这行
-}))
     }
 }
+
 // 显示解读
 function displayReading(reading, cards, spread) {
     const container = document.getElementById('reading-content');
