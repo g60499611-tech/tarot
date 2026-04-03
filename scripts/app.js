@@ -362,9 +362,19 @@ function selectCard(cardElement, cardIndex) {
     const cardCount = SPREADS[state.currentSpread].cardCount;
     
     if (state.selectedCards.length >= cardCount) return;
-    if (state.selectedCards.includes(cardIndex)) return;
     
-    state.selectedCards.push(cardIndex);
+    // 检查是否已选（适配对象结构）
+    const alreadySelected = state.selectedCards.some(item => item.index === cardIndex);
+    if (alreadySelected) return;
+    
+    // 随机决定正逆位（50%概率逆位）
+    const isReversed = Math.random() < 0.5;
+    
+    // 存储索引和正逆位状态
+    state.selectedCards.push({
+        index: cardIndex,
+        isReversed: isReversed
+    });
     
     // 先移除hovered状态，然后触发飞出动画
     cardElement.classList.remove('hovered');
@@ -399,21 +409,34 @@ async function revealCards() {
     contentContainer.innerHTML = '';
     
     const spread = SPREADS[state.currentSpread];
-    const selectedCardData = state.selectedCards.map(index => TAROT_CARDS[index]);
+    
+    // 适配新的数据结构（包含正逆位）
+    const selectedCardData = state.selectedCards.map(item => {
+        const card = TAROT_CARDS[item.index];
+        return {
+            ...card,
+            isReversed: item.isReversed
+        };
+    });
     
     // 创建结果卡牌 - 卡牌图片占满，信息在下方
     selectedCardData.forEach((card, i) => {
         const cardEl = document.createElement('div');
         cardEl.className = 'reading-card';
+        // 逆位时旋转图片
+        const rotateStyle = card.isReversed ? 'transform: rotate(180deg);' : '';
+        const positionText = spread.positions[i] + (card.isReversed ? ' (逆位)' : '');
+        
         cardEl.innerHTML = `
             <div class="reading-card-inner">
                 <div class="reading-card-front">
                     <img class="reading-card-image" src="cards/${card.image}" alt="${card.name}" 
+                         style="${rotateStyle}"
                          onerror="this.src='public/card-back.jpg'">
                 </div>
             </div>
             <div class="reading-card-info">
-                <div class="reading-card-position">${spread.positions[i]}</div>
+                <div class="reading-card-position">${positionText}</div>
                 <div class="reading-card-name">${card.name}</div>
             </div>
         `;
@@ -485,7 +508,11 @@ async function fetchReading(cards, spread) {
         },
         body: JSON.stringify({
             spread: state.currentSpread,
-            cards: cards.map(c => ({ name: c.name, meaning: c.meaning })),
+            cards: cards.map(c => ({ 
+                name: c.name, 
+                meaning: c.meaning,
+                isReversed: c.isReversed  // 添加正逆位信息
+            })),
             positions: spread.positions
         })
     });
@@ -499,13 +526,18 @@ async function fetchReading(cards, spread) {
 
 // 本地解读生成（Fallback）
 function generateLocalReading(cards, spread) {
-    const interpretations = cards.map((card, i) => ({
-        position: spread.positions[i],
-        card: card.name,
-        interpretation: `${card.name}出现在${spread.positions[i]}的位置，暗示着${card.meaning}的能量正在影响这个领域。这张牌提醒你要关注内心的声音，保持觉察，变化即将到来。`
-    }));
+    const interpretations = cards.map((card, i) => {
+        const positionText = spread.positions[i] + (card.isReversed ? ' (逆位)' : '');
+        const reversedText = card.isReversed ? '逆位暗示着能量的阻滞或内在的挑战，需要正视阴影面。' : '正位能量流畅，带来积极的启示和指引。';
+        
+        return {
+            position: positionText,
+            card: card.name,
+            interpretation: `${card.name}${card.isReversed ? '（逆位）' : ''}出现在${spread.positions[i]}的位置，${reversedText}暗示着${card.meaning}的能量正在影响这个领域。这张牌提醒你要关注内心的声音，保持觉察，变化即将到来。`
+        };
+    });
     
-    const summary = `这${cards.length}张牌共同揭示了你当前的生命课题。${cards[0].name}作为核心能量，指引你在${spread.positions[0]}的领域中寻求突破。相信直觉，保持开放，宇宙的安排正在为你展开。`;
+    const summary = `这${cards.length}张牌共同揭示了你当前的生命课题。${cards[0].name}${cards[0].isReversed ? '（逆位）' : ''}作为核心能量，指引你在${spread.positions[0]}的领域中寻求突破。${cards.some(c => c.isReversed) ? '其中逆位牌提示你需要关注内在的阻碍并转化为成长的契机。' : '正位牌阵显示能量流动顺畅，是采取行动的好时机。'}相信直觉，保持开放，宇宙的安排正在为你展开。`;
     
     return { positions: interpretations, summary };
 }
