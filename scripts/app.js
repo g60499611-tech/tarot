@@ -279,9 +279,7 @@ function initCardSelection() {
         const card = document.createElement('div');
         card.className = 'tarot-card';
         card.dataset.index = cardIndex;
-            // 随机决定正逆位（50%概率逆位）
-    const isReversed = Math.random() < 0.5;
-    card.dataset.reversed = isReversed;
+      
         // 计算微弧形位置和旋转
         const positionFromCenter = i - centerIndex;
         const rotation = positionFromCenter * angleStep;
